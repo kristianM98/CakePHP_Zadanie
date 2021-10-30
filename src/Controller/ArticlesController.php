@@ -1,8 +1,15 @@
 <?php
-// src/Controller/ArticlesController.php
+
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Model\Entity\Article;
+use Cake\Database\Connection;
+use Cake\Datasource\ConnectionManager;
+use Cake\Error\Debugger;
+use Cake\I18n\FrozenTime;
+use Cake\ORM\Locator\LocatorAwareTrait;
+use function PHPUnit\Framework\returnArgument;
 
 class ArticlesController extends AppController
 {
@@ -51,17 +58,33 @@ class ArticlesController extends AppController
             ->findBySlug($slug)
             ->firstOrFail();
 
+        $title = $article->get('title'); //get 'title' from table
+        echo $title;
         if ($this->request->is(['post', 'put'])) {
+
+
             $this->Articles->patchEntity($article, $this->request->getData());
-            if ($this->Articles->save($article)) {
+            if ($title != $article->get('title')) {   // checked if 'title' is changed
+
+                $articles = $this->getTableLocator()->get('articles');
+                $query = $articles->query();
+                $query->insert(['title_edited'])
+                    ->values([
+                        'title_edited' => FrozenTime::now()
+                    ])
+                    ->execute();
+            } elseif
+             ($this->Articles->save($article)) {
                 $this->Flash->success(__('Your article has been updated.'));
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('Unable to update your article.'));
+        }
+                $this->Flash->error(__('Unable to update your article.'));
+
+
+            $this->set('article', $article);
         }
 
-        $this->set('article', $article);
-    }
 
     public function delete($slug)
     {
@@ -73,4 +96,49 @@ class ArticlesController extends AppController
             return $this->redirect(['action' => 'index']);
         }
     }
+
+    public function updateTitle($title)
+    {
+//        $db =& ConnectionManager::getDataSource($this->useDBConfig);
+//        return $db->LastAffected($title);
+//        $title = $articles->get($title);
+
+//        $articles = $this->getTableLocator()->get('Articles');
+//
+//        $query = $this->Articles->find();
+
+        $articles = $this->getTableLocator()->get('articles');
+        $title = $articles->get('title');
+
+
+
+        $query = $articles->find();     // Find a 'title'
+        $query->select([
+                'title' => $title
+            ]);
+
+        $query = $articles->query();
+        $query->insert(['title_edited'])
+            ->values([
+                'title_edited' => Now()
+            ])
+            ->execute();
+        $article->insert(['title_edited'])    //insert value of actual datetime in 'title_edited'
+        ->values([
+            'title_edited' => Now()
+        ]);
+
+
+        if ($title != $article->get('title')->value) {   // checked if 'title' is changed
+            $articles = $this->getTableLocator()->get('articles');
+            $query = $articles->query();
+            $query->insert(['title_edited'])
+                ->values([
+                    'title_edited' => FrozenTime::now()
+                ])
+                ->execute();
+
+        }
+    }
+
 }

@@ -7,6 +7,7 @@
         <th>Title</th>
         <th>Created</th>
         <th>Action</th>
+        <th>Edited title</th>
     </tr>
 
     <!-- Here's where we iterate through our $articles query object, printing out article info -->

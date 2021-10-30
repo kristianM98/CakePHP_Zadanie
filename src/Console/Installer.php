@@ -79,7 +79,7 @@ class Installer
     public static function createAppLocalConfig($dir, $io)
     {
         $appLocalConfig = $dir . '/config/app_local.php';
-        $appLocalConfigTemplate = $dir . '/config/app_local.example.php';
+        $appLocalConfigTemplate = $dir . '/config/app_local.php';
         if (!file_exists($appLocalConfig)) {
             copy($appLocalConfigTemplate, $appLocalConfig);
             $io->write('Created `config/app_local.php` file');
