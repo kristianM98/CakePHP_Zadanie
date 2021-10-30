@@ -6,8 +6,8 @@
     <tr>
         <th>Title</th>
         <th>Created</th>
-        <th>Action</th>
         <th>Edited title</th>
+        <th>Action</th>
     </tr>
 
     <!-- Here's where we iterate through our $articles query object, printing out article info -->
@@ -19,6 +19,9 @@
             </td>
             <td>
                 <?= $article->created->format(DATE_RFC850) ?>
+            </td>
+            <td>
+                <?= $article->title_edited->format(DATE_RFC850) ?>
             </td>
             <td>
                 <?= $this->Html->link('Edit', ['action' => 'edit', $article->slug]) ?>

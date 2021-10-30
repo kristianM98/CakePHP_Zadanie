@@ -29,6 +29,7 @@ class ArticlesController extends AppController
 
     public function view($slug)
     {
+        echo pr(Debugger::trace());
         $article = $this->Articles->findBySlug($slug)->firstOrFail();
         $this->set(compact('article'));
     }
@@ -62,18 +63,16 @@ class ArticlesController extends AppController
         if ($this->request->is(['post', 'put'])) {
             $this->Articles->patchEntity($article, $this->request->getData());
             if ($title != $article->get('title')) {   // checked if 'title' is changed
-                $article->title_edited = FrozenTime::now();     // added date
+                $article->title_edited = FrozenTime::now();     // added datetime
             }
             if ($this->Articles->save($article)) {
-               $this->Flash->success(__('Your article has been updated.'));
+                $this->Flash->success(__('Your article has been updated.'));
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('Unable to update your article.'));
         }
-
-            $this->set('article', $article);
-        }
-
+        $this->set('article', $article);
+    }
 
     public function delete($slug)
     {
@@ -83,58 +82,6 @@ class ArticlesController extends AppController
         if ($this->Articles->delete($article)) {
             $this->Flash->success(__('The {0} article has been deleted.', $article->title));
             return $this->redirect(['action' => 'index']);
-        }
-    }
-
-    public function updateTitle($title)
-    {
-//        $db =& ConnectionManager::getDataSource($this->useDBConfig);
-//        return $db->LastAffected($title);
-//        $title = $articles->get($title);
-
-//        $articles = $this->getTableLocator()->get('Articles');
-//
-//        $query = $this->Articles->find();
-
-        $articles = $this->getTableLocator()->get('articles');
-        $title = $articles->get('title');
-
-
-
-        $query = $articles->find();     // Find a 'title'
-        $query->select([
-                'title' => $title
-            ]);
-
-        $query = $articles->query();
-        $query->insert(['title_edited'])
-            ->values([
-                'title_edited' => Now()
-            ])
-            ->execute();
-        $article->insert(['title_edited'])    //insert value of actual datetime in 'title_edited'
-        ->values([
-            'title_edited' => Now()
-        ]);
-
-
-        if ($title != $article->get('title')->value) {   // checked if 'title' is changed
-            $articles = $this->getTableLocator()->get('articles');
-            $query = $articles->query();
-            $query->insert(['title_edited'])
-                ->values([
-                    'title_edited' => FrozenTime::now()
-                ])
-                ->execute();
-
-
-            $articles = $this->getTableLocator()->get('articles');
-            $query = $articles->query();
-            $query->insert(['title_edited'])
-                ->values([
-                    'title_edited' => FrozenTime::now()
-                ])
-                ->execute();
         }
     }
 
