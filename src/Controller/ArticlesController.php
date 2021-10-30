@@ -59,28 +59,17 @@ class ArticlesController extends AppController
             ->firstOrFail();
 
         $title = $article->get('title'); //get 'title' from table
-        echo $title;
         if ($this->request->is(['post', 'put'])) {
-
-
             $this->Articles->patchEntity($article, $this->request->getData());
             if ($title != $article->get('title')) {   // checked if 'title' is changed
-
-                $articles = $this->getTableLocator()->get('articles');
-                $query = $articles->query();
-                $query->insert(['title_edited'])
-                    ->values([
-                        'title_edited' => FrozenTime::now()
-                    ])
-                    ->execute();
-            } elseif
-             ($this->Articles->save($article)) {
-                $this->Flash->success(__('Your article has been updated.'));
+                $article->title_edited = FrozenTime::now();     // added date
+            }
+            if ($this->Articles->save($article)) {
+               $this->Flash->success(__('Your article has been updated.'));
                 return $this->redirect(['action' => 'index']);
             }
+            $this->Flash->error(__('Unable to update your article.'));
         }
-                $this->Flash->error(__('Unable to update your article.'));
-
 
             $this->set('article', $article);
         }
@@ -138,6 +127,14 @@ class ArticlesController extends AppController
                 ])
                 ->execute();
 
+
+            $articles = $this->getTableLocator()->get('articles');
+            $query = $articles->query();
+            $query->insert(['title_edited'])
+                ->values([
+                    'title_edited' => FrozenTime::now()
+                ])
+                ->execute();
         }
     }
 
