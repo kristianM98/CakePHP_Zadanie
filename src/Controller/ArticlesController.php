@@ -29,9 +29,10 @@ class ArticlesController extends AppController
 
     public function view($slug)
     {
-        echo pr(Debugger::trace());
+
         $article = $this->Articles->findBySlug($slug)->firstOrFail();
         $this->set(compact('article'));
+        echo debug($article);
     }
 
     public function add()
