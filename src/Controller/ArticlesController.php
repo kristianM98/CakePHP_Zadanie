@@ -64,7 +64,7 @@ class ArticlesController extends AppController
         if ($this->request->is(['post', 'put'])) {
             $this->Articles->patchEntity($article, $this->request->getData());
             if ($title != $article->get('title')) {   // checked if 'title' is changed
-                $article->title_edited = FrozenTime::now();     // added datetime
+                $article->title_edited = FrozenTime::now();     // added datetime now
             }
             if ($this->Articles->save($article)) {
                 $this->Flash->success(__('Your article has been updated.'));
